@@ -58,9 +58,13 @@ export const getServer = (config, logger, collection) => {
 
     socket.on('GET_DATA', async function (msg: any) {
       l.info('GET_DATA request: ' + msg);
-      const data = await collection.find({ timestamp: { $gt: msg } }).toArray();
-      console.log(data);
-      socket.emit('SEND_DATA', data);
+      const data = await collection
+        .find({
+          $or: [{ timestamp: { $gt: msg } }, { utcDateTime: { $gt: msg } }],
+        })
+        .toArray();
+
+      data.forEach((d) => socket.emit('SEND_DATA', d));
     });
   });
 

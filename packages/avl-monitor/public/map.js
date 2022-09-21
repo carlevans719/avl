@@ -15,12 +15,13 @@ var mapDevices = [];
 var socket = io({ transports: ['websocket'], upgrade: false, path: '/ws/' });
 
 socket.on('SEND_DATA', function (msg) {
-  var arrByDevice = mapDevices[msg.imei];
+  var imei = msg.imei || msg.IMEI;
+  var arrByDevice = mapDevices[imei];
   if (!arrByDevice) {
-    mapDevices[msg.imei] = arrByDevice = [];
+    mapDevices[imei] = arrByDevice = [];
   } else {
     //  ensure array size
-    if (arrByDevice.length >= 5) {
+    if (arrByDevice.length >= 5000) {
       var killMsg = arrByDevice.pop();
       var killMarker = killMsg['objMarker'];
       killMarker.off('click', onMarkerClick);
@@ -35,26 +36,29 @@ socket.on('SEND_DATA', function (msg) {
     var updateMarker = arrByDevice[1]['objMarker'];
     updateMarker.setOpacity(0.4);
 
-    //	special 'disappearing' fading for last marker in the range
+    //  special 'disappearing' fading for last marker in the range
     updateMarker = arrByDevice[arrByDevice.length - 1]['objMarker'];
     updateMarker.setOpacity(0.25);
   }
 });
 
 function setMarker(msg, opacity) {
-  var marker = L.marker([msg.lat, msg.lng], {
+  var lat = msg.lat || msg.latitude;
+  var lng = msg.lng || msg.longitude;
+  var marker = L.marker([lat, lng], {
     icon: iconCar,
     opacity: opacity ? opacity : 1.0,
   }).addTo(map);
   msg['objMarker'] = marker; // keep marker object
 
+  var imei = msg.imei || msg.IMEI;
   var info;
-  info = 'Device: ' + msg.imei;
+  info = 'Device: ' + imei;
 
   info += '<br/>';
-  info += 'Lat: ' + msg.lat;
+  info += 'Lat: ' + lat;
   info += '<br/>';
-  info += 'Lng: ' + msg.lng;
+  info += 'Lng: ' + lng;
   info += '<br/>';
   info += 'Altitude: ' + msg.altitude + ' m';
 

@@ -1,0 +1,18 @@
+{
+  "name": "avl-parser-bitrek",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "avl-parser-utils": "workspace:packages/avl-parser-utils"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.3"
+  }
+}
